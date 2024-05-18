@@ -1,5 +1,4 @@
 import fs from 'fs'
-import { Lexer } from './lexer.js'
 import stdlib, { EaselError } from './stdlib.js'
 
 const readFile = location =>
@@ -27,16 +26,7 @@ const writeFile = (location, data) =>
   if (location) {
     const program = await readFile(location)
 
-    const lexer = new Lexer(program)
-    try {
-      lexer.scanTokens()
-    } catch (err) {
-      if (err instanceof EaselError) console.log(err)
-      process.exit(1)
-    } finally {
-      if (debug)
-        await writeFile('tokens.json', JSON.stringify(lexer.tokens, null, 2))
-    }
+    // TODO: Run our program!
   } else {
     // Interactive REPL
   }
