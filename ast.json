@@ -1,0 +1,827 @@
+[
+  {
+    "type": "Var",
+    "name": "rows",
+    "value": { "type": "Literal", "value": 50 }
+  },
+  {
+    "type": "Var",
+    "name": "cols",
+    "value": { "type": "Literal", "value": 20 }
+  },
+  { "type": "Struct", "name": "Cell", "members": ["x", "y", "live"] },
+  {
+    "type": "Func",
+    "name": "seed",
+    "params": [],
+    "body": [
+      {
+        "type": "Var",
+        "name": "cells",
+        "value": { "type": "Array", "value": [] }
+      },
+      {
+        "type": "For",
+        "id": "x",
+        "range": [
+          { "type": "Literal", "value": 0 },
+          { "type": "Var", "name": "rows" }
+        ],
+        "body": [
+          {
+            "type": "For",
+            "id": "y",
+            "range": [
+              { "type": "Literal", "value": 0 },
+              { "type": "Var", "name": "cols" }
+            ],
+            "body": [
+              {
+                "type": "Var",
+                "name": "live",
+                "value": { "type": "Literal", "value": false }
+              },
+              {
+                "type": "Var",
+                "name": "chance",
+                "value": {
+                  "type": "Call",
+                  "caller": { "type": "Var", "name": "random" },
+                  "args": [
+                    { "type": "Literal", "value": 0 },
+                    { "type": "Literal", "value": 100 }
+                  ]
+                }
+              },
+              {
+                "type": "Conditional",
+                "condition": {
+                  "type": "Binary",
+                  "left": { "type": "Var", "name": "chance" },
+                  "operator": "<",
+                  "right": { "type": "Literal", "value": 20 }
+                },
+                "body": [
+                  {
+                    "type": "Var",
+                    "name": "live",
+                    "value": { "type": "Literal", "value": true }
+                  }
+                ],
+                "otherwise": []
+              },
+              {
+                "type": "Call",
+                "caller": {
+                  "type": "Get",
+                  "caller": { "type": "Var", "name": "cells" },
+                  "property": "add",
+                  "isExpr": false
+                },
+                "args": [
+                  {
+                    "type": "Instance",
+                    "name": "Cell",
+                    "members": {
+                      "x": { "type": "Var", "name": "x" },
+                      "y": { "type": "Var", "name": "y" },
+                      "live": { "type": "Var", "name": "live" }
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      { "type": "Return", "value": { "type": "Var", "name": "cells" } }
+    ]
+  },
+  {
+    "type": "Var",
+    "name": "cells",
+    "value": {
+      "type": "Call",
+      "caller": { "type": "Var", "name": "seed" },
+      "args": []
+    }
+  },
+  {
+    "type": "Func",
+    "name": "getNeighbors",
+    "params": ["cells", "index"],
+    "body": [
+      {
+        "type": "Var",
+        "name": "neighbors",
+        "value": { "type": "Array", "value": [] }
+      },
+      {
+        "type": "Conditional",
+        "condition": {
+          "type": "Binary",
+          "left": {
+            "type": "Binary",
+            "left": { "type": "Var", "name": "index" },
+            "operator": "-",
+            "right": {
+              "type": "Binary",
+              "left": { "type": "Var", "name": "rows" },
+              "operator": "-",
+              "right": { "type": "Literal", "value": 1 }
+            }
+          },
+          "operator": ">",
+          "right": { "type": "Literal", "value": 0 }
+        },
+        "body": [
+          {
+            "type": "Call",
+            "caller": {
+              "type": "Get",
+              "caller": { "type": "Var", "name": "neighbors" },
+              "property": "add",
+              "isExpr": false
+            },
+            "args": [
+              {
+                "type": "Get",
+                "caller": { "type": "Var", "name": "cells" },
+                "property": {
+                  "type": "Binary",
+                  "left": { "type": "Var", "name": "index" },
+                  "operator": "-",
+                  "right": {
+                    "type": "Binary",
+                    "left": { "type": "Var", "name": "rows" },
+                    "operator": "-",
+                    "right": { "type": "Literal", "value": 1 }
+                  }
+                },
+                "isExpr": true
+              }
+            ]
+          }
+        ],
+        "otherwise": []
+      },
+      {
+        "type": "Conditional",
+        "condition": {
+          "type": "Binary",
+          "left": {
+            "type": "Binary",
+            "left": { "type": "Var", "name": "index" },
+            "operator": "-",
+            "right": { "type": "Var", "name": "rows" }
+          },
+          "operator": ">",
+          "right": { "type": "Literal", "value": 0 }
+        },
+        "body": [
+          {
+            "type": "Call",
+            "caller": {
+              "type": "Get",
+              "caller": { "type": "Var", "name": "neighbors" },
+              "property": "add",
+              "isExpr": false
+            },
+            "args": [
+              {
+                "type": "Get",
+                "caller": { "type": "Var", "name": "cells" },
+                "property": {
+                  "type": "Binary",
+                  "left": { "type": "Var", "name": "index" },
+                  "operator": "-",
+                  "right": { "type": "Var", "name": "rows" }
+                },
+                "isExpr": true
+              }
+            ]
+          }
+        ],
+        "otherwise": []
+      },
+      {
+        "type": "Conditional",
+        "condition": {
+          "type": "Binary",
+          "left": {
+            "type": "Binary",
+            "left": { "type": "Var", "name": "index" },
+            "operator": "-",
+            "right": {
+              "type": "Binary",
+              "left": { "type": "Var", "name": "rows" },
+              "operator": "+",
+              "right": { "type": "Literal", "value": 1 }
+            }
+          },
+          "operator": ">",
+          "right": { "type": "Literal", "value": 0 }
+        },
+        "body": [
+          {
+            "type": "Call",
+            "caller": {
+              "type": "Get",
+              "caller": { "type": "Var", "name": "neighbors" },
+              "property": "add",
+              "isExpr": false
+            },
+            "args": [
+              {
+                "type": "Get",
+                "caller": { "type": "Var", "name": "cells" },
+                "property": {
+                  "type": "Binary",
+                  "left": { "type": "Var", "name": "index" },
+                  "operator": "-",
+                  "right": {
+                    "type": "Binary",
+                    "left": { "type": "Var", "name": "rows" },
+                    "operator": "+",
+                    "right": { "type": "Literal", "value": 1 }
+                  }
+                },
+                "isExpr": true
+              }
+            ]
+          }
+        ],
+        "otherwise": []
+      },
+      {
+        "type": "Conditional",
+        "condition": {
+          "type": "Binary",
+          "left": { "type": "Var", "name": "index" },
+          "operator": ">",
+          "right": { "type": "Literal", "value": 0 }
+        },
+        "body": [
+          {
+            "type": "Call",
+            "caller": {
+              "type": "Get",
+              "caller": { "type": "Var", "name": "neighbors" },
+              "property": "add",
+              "isExpr": false
+            },
+            "args": [
+              {
+                "type": "Get",
+                "caller": { "type": "Var", "name": "cells" },
+                "property": {
+                  "type": "Binary",
+                  "left": { "type": "Var", "name": "index" },
+                  "operator": "-",
+                  "right": { "type": "Literal", "value": 1 }
+                },
+                "isExpr": true
+              }
+            ]
+          }
+        ],
+        "otherwise": []
+      },
+      {
+        "type": "Conditional",
+        "condition": {
+          "type": "Binary",
+          "left": { "type": "Var", "name": "index" },
+          "operator": "<",
+          "right": {
+            "type": "Binary",
+            "left": {
+              "type": "Get",
+              "caller": { "type": "Var", "name": "cells" },
+              "property": "length",
+              "isExpr": false
+            },
+            "operator": "-",
+            "right": { "type": "Literal", "value": 1 }
+          }
+        },
+        "body": [
+          {
+            "type": "Call",
+            "caller": {
+              "type": "Get",
+              "caller": { "type": "Var", "name": "neighbors" },
+              "property": "add",
+              "isExpr": false
+            },
+            "args": [
+              {
+                "type": "Get",
+                "caller": { "type": "Var", "name": "cells" },
+                "property": {
+                  "type": "Binary",
+                  "left": { "type": "Var", "name": "index" },
+                  "operator": "+",
+                  "right": { "type": "Literal", "value": 1 }
+                },
+                "isExpr": true
+              }
+            ]
+          }
+        ],
+        "otherwise": []
+      },
+      {
+        "type": "Conditional",
+        "condition": {
+          "type": "Binary",
+          "left": {
+            "type": "Binary",
+            "left": { "type": "Var", "name": "index" },
+            "operator": "+",
+            "right": {
+              "type": "Binary",
+              "left": { "type": "Var", "name": "rows" },
+              "operator": "-",
+              "right": { "type": "Literal", "value": 1 }
+            }
+          },
+          "operator": "<",
+          "right": {
+            "type": "Binary",
+            "left": {
+              "type": "Get",
+              "caller": { "type": "Var", "name": "cells" },
+              "property": "length",
+              "isExpr": false
+            },
+            "operator": "-",
+            "right": { "type": "Literal", "value": 1 }
+          }
+        },
+        "body": [
+          {
+            "type": "Call",
+            "caller": {
+              "type": "Get",
+              "caller": { "type": "Var", "name": "neighbors" },
+              "property": "add",
+              "isExpr": false
+            },
+            "args": [
+              {
+                "type": "Get",
+                "caller": { "type": "Var", "name": "cells" },
+                "property": {
+                  "type": "Binary",
+                  "left": { "type": "Var", "name": "index" },
+                  "operator": "+",
+                  "right": {
+                    "type": "Binary",
+                    "left": { "type": "Var", "name": "rows" },
+                    "operator": "-",
+                    "right": { "type": "Literal", "value": 1 }
+                  }
+                },
+                "isExpr": true
+              }
+            ]
+          }
+        ],
+        "otherwise": []
+      },
+      {
+        "type": "Conditional",
+        "condition": {
+          "type": "Binary",
+          "left": {
+            "type": "Binary",
+            "left": { "type": "Var", "name": "index" },
+            "operator": "+",
+            "right": { "type": "Var", "name": "rows" }
+          },
+          "operator": "<",
+          "right": {
+            "type": "Binary",
+            "left": {
+              "type": "Get",
+              "caller": { "type": "Var", "name": "cells" },
+              "property": "length",
+              "isExpr": false
+            },
+            "operator": "-",
+            "right": { "type": "Literal", "value": 1 }
+          }
+        },
+        "body": [
+          {
+            "type": "Call",
+            "caller": {
+              "type": "Get",
+              "caller": { "type": "Var", "name": "neighbors" },
+              "property": "add",
+              "isExpr": false
+            },
+            "args": [
+              {
+                "type": "Get",
+                "caller": { "type": "Var", "name": "cells" },
+                "property": {
+                  "type": "Binary",
+                  "left": { "type": "Var", "name": "index" },
+                  "operator": "+",
+                  "right": { "type": "Literal", "value": 1 }
+                },
+                "isExpr": true
+              }
+            ]
+          }
+        ],
+        "otherwise": []
+      },
+      {
+        "type": "Conditional",
+        "condition": {
+          "type": "Binary",
+          "left": {
+            "type": "Binary",
+            "left": { "type": "Var", "name": "index" },
+            "operator": "+",
+            "right": {
+              "type": "Binary",
+              "left": { "type": "Var", "name": "rows" },
+              "operator": "+",
+              "right": { "type": "Literal", "value": 1 }
+            }
+          },
+          "operator": "<",
+          "right": {
+            "type": "Binary",
+            "left": {
+              "type": "Get",
+              "caller": { "type": "Var", "name": "cells" },
+              "property": "length",
+              "isExpr": false
+            },
+            "operator": "-",
+            "right": { "type": "Literal", "value": 1 }
+          }
+        },
+        "body": [
+          {
+            "type": "Call",
+            "caller": {
+              "type": "Get",
+              "caller": { "type": "Var", "name": "neighbors" },
+              "property": "add",
+              "isExpr": false
+            },
+            "args": [
+              {
+                "type": "Get",
+                "caller": { "type": "Var", "name": "cells" },
+                "property": {
+                  "type": "Binary",
+                  "left": { "type": "Var", "name": "index" },
+                  "operator": "+",
+                  "right": {
+                    "type": "Binary",
+                    "left": { "type": "Var", "name": "rows" },
+                    "operator": "-",
+                    "right": { "type": "Literal", "value": 1 }
+                  }
+                },
+                "isExpr": true
+              }
+            ]
+          }
+        ],
+        "otherwise": []
+      },
+      {
+        "type": "Var",
+        "name": "alive",
+        "value": { "type": "Array", "value": [] }
+      },
+      {
+        "type": "For",
+        "id": "i",
+        "range": [
+          { "type": "Literal", "value": 0 },
+          {
+            "type": "Get",
+            "caller": { "type": "Var", "name": "neighbors" },
+            "property": "length",
+            "isExpr": false
+          }
+        ],
+        "body": [
+          {
+            "type": "Conditional",
+            "condition": {
+              "type": "Get",
+              "caller": {
+                "type": "Get",
+                "caller": { "type": "Var", "name": "neighbors" },
+                "property": { "type": "Var", "name": "i" },
+                "isExpr": true
+              },
+              "property": "live",
+              "isExpr": false
+            },
+            "body": [
+              {
+                "type": "Call",
+                "caller": {
+                  "type": "Get",
+                  "caller": { "type": "Var", "name": "alive" },
+                  "property": "add",
+                  "isExpr": false
+                },
+                "args": [
+                  {
+                    "type": "Get",
+                    "caller": { "type": "Var", "name": "neighbors" },
+                    "property": { "type": "Var", "name": "i" },
+                    "isExpr": true
+                  }
+                ]
+              }
+            ],
+            "otherwise": []
+          }
+        ]
+      },
+      { "type": "Return", "value": { "type": "Var", "name": "alive" } }
+    ]
+  },
+  {
+    "type": "Func",
+    "name": "painting",
+    "params": [],
+    "body": [
+      {
+        "type": "For",
+        "id": "i",
+        "range": [
+          { "type": "Literal", "value": 0 },
+          {
+            "type": "Get",
+            "caller": { "type": "Var", "name": "cells" },
+            "property": "length",
+            "isExpr": false
+          }
+        ],
+        "body": [
+          {
+            "type": "Var",
+            "name": "cell",
+            "value": {
+              "type": "Get",
+              "caller": { "type": "Var", "name": "cells" },
+              "property": { "type": "Var", "name": "i" },
+              "isExpr": true
+            }
+          },
+          {
+            "type": "Var",
+            "name": "neighbors",
+            "value": {
+              "type": "Call",
+              "caller": { "type": "Var", "name": "getNeighbors" },
+              "args": [
+                { "type": "Var", "name": "cells" },
+                { "type": "Var", "name": "i" }
+              ]
+            }
+          },
+          {
+            "type": "Conditional",
+            "condition": {
+              "type": "Get",
+              "caller": { "type": "Var", "name": "cell" },
+              "property": "live",
+              "isExpr": false
+            },
+            "body": [
+              {
+                "type": "Conditional",
+                "condition": {
+                  "type": "Binary",
+                  "left": {
+                    "type": "Get",
+                    "caller": { "type": "Var", "name": "neighbors" },
+                    "property": "length",
+                    "isExpr": false
+                  },
+                  "operator": "<",
+                  "right": {
+                    "type": "Binary",
+                    "left": { "type": "Literal", "value": 2 },
+                    "operator": "||",
+                    "right": {
+                      "type": "Binary",
+                      "left": {
+                        "type": "Get",
+                        "caller": { "type": "Var", "name": "neighbors" },
+                        "property": "length",
+                        "isExpr": false
+                      },
+                      "operator": ">",
+                      "right": { "type": "Literal", "value": 3 }
+                    }
+                  }
+                },
+                "body": [
+                  {
+                    "type": "Set",
+                    "caller": "cell",
+                    "property": "live",
+                    "value": { "type": "Literal", "value": false }
+                  }
+                ],
+                "otherwise": [
+                  {
+                    "type": "Conditional",
+                    "condition": {
+                      "type": "Unary",
+                      "operator": "!",
+                      "apply": {
+                        "type": "Binary",
+                        "left": {
+                          "type": "Get",
+                          "caller": { "type": "Var", "name": "cell" },
+                          "property": "live",
+                          "isExpr": false
+                        },
+                        "operator": "&&",
+                        "right": {
+                          "type": "Binary",
+                          "left": { "type": "Var", "name": "neighbors" },
+                          "operator": "==",
+                          "right": { "type": "Literal", "value": 3 }
+                        }
+                      }
+                    },
+                    "body": [
+                      {
+                        "type": "Set",
+                        "caller": "cell",
+                        "property": "live",
+                        "value": { "type": "Literal", "value": true }
+                      }
+                    ],
+                    "otherwise": []
+                  }
+                ]
+              }
+            ],
+            "otherwise": []
+          },
+          {
+            "type": "Conditional",
+            "condition": {
+              "type": "Get",
+              "caller": { "type": "Var", "name": "cell" },
+              "property": "live",
+              "isExpr": false
+            },
+            "body": [
+              {
+                "type": "Var",
+                "name": "color",
+                "value": {
+                  "type": "Instance",
+                  "name": "Color",
+                  "members": {
+                    "r": { "type": "Literal", "value": 0 },
+                    "g": { "type": "Literal", "value": 255 },
+                    "b": { "type": "Literal", "value": 0 }
+                  }
+                }
+              },
+              {
+                "type": "Call",
+                "caller": {
+                  "type": "Get",
+                  "caller": { "type": "Var", "name": "Canvas" },
+                  "property": "fill",
+                  "isExpr": false
+                },
+                "args": [
+                  {
+                    "type": "Get",
+                    "caller": { "type": "Var", "name": "cell" },
+                    "property": "x",
+                    "isExpr": false
+                  },
+                  {
+                    "type": "Get",
+                    "caller": { "type": "Var", "name": "cell" },
+                    "property": "y",
+                    "isExpr": false
+                  }
+                ]
+              },
+              {
+                "type": "Call",
+                "caller": { "type": "Var", "name": "ink" },
+                "args": [
+                  {
+                    "type": "Call",
+                    "caller": {
+                      "type": "Get",
+                      "caller": { "type": "Var", "name": "Canvas" },
+                      "property": "get",
+                      "isExpr": false
+                    },
+                    "args": [
+                      {
+                        "type": "Get",
+                        "caller": { "type": "Var", "name": "cell" },
+                        "property": "x",
+                        "isExpr": false
+                      },
+                      {
+                        "type": "Get",
+                        "caller": { "type": "Var", "name": "cell" },
+                        "property": "y",
+                        "isExpr": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            ],
+            "otherwise": [
+              {
+                "type": "Conditional",
+                "condition": { "type": "Literal", "value": true },
+                "body": [
+                  {
+                    "type": "Call",
+                    "caller": {
+                      "type": "Get",
+                      "caller": { "type": "Var", "name": "Canvas" },
+                      "property": "erase",
+                      "isExpr": false
+                    },
+                    "args": [
+                      {
+                        "type": "Get",
+                        "caller": { "type": "Var", "name": "cell" },
+                        "property": "x",
+                        "isExpr": false
+                      },
+                      {
+                        "type": "Get",
+                        "caller": { "type": "Var", "name": "cell" },
+                        "property": "y",
+                        "isExpr": false
+                      }
+                    ]
+                  },
+                  {
+                    "type": "Call",
+                    "caller": { "type": "Var", "name": "ink" },
+                    "args": [
+                      {
+                        "type": "Call",
+                        "caller": {
+                          "type": "Get",
+                          "caller": { "type": "Var", "name": "Canvas" },
+                          "property": "get",
+                          "isExpr": false
+                        },
+                        "args": [
+                          {
+                            "type": "Get",
+                            "caller": { "type": "Var", "name": "cell" },
+                            "property": "x",
+                            "isExpr": false
+                          },
+                          {
+                            "type": "Get",
+                            "caller": { "type": "Var", "name": "cell" },
+                            "property": "y",
+                            "isExpr": false
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "otherwise": []
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "Call",
+    "caller": { "type": "Var", "name": "painting" },
+    "args": []
+  }
+]
